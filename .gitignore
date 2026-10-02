@@ -1,0 +1,7 @@
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+_ref_*.html
+_wiki_tmp.json
+assets/images/_tmp_*

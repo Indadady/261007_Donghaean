@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JLH9GD9SVR"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JLH9GD9SVR');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>동해안 당일 가이드북 - 스마트 가이드 | 투어메이커</title>
+    <meta name="description" content="2026. 10. 7(수) 태백 출발 동해안 당일 여정 — 고성 송지호·주문진 어시장·양양 휴휴암·강릉 안목 커피거리">
+    <meta property="og:title" content="동해안 당일 가이드북">
+    <meta property="og:description" content="2026. 10. 7 (수) · 태백 출발 · 동해 바다 당일 여정 안내">
+    <meta property="og:image" content="https://indadady.github.io/261007_Donghaean/assets/images/og-thumb.jpg">
+    <meta property="og:image:width" content="1920">
+    <meta property="og:image:height" content="1272">
+    <meta property="og:image:alt" content="강릉 안목해변 커피거리 동해 전경">
+    <meta property="og:url" content="https://indadady.github.io/261007_Donghaean/">
+    <meta property="og:type" content="website">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+    <style>
+        :root { --tm: #004098; --tm-dark: #002d6b; }
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .font-title { font-family: 'Noto Sans KR', sans-serif; letter-spacing: -0.025em; }
+        .hero-bg {
+            background: linear-gradient(rgba(0, 28, 60, 0.50), rgba(0, 45, 107, 0.60)), url('assets/images/hero.jpg');
+            background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat;
+        }
+        @media (max-width: 768px){ .hero-bg { background-attachment: scroll; } }
+        #map { height: 540px; width: 100%; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 10; }
+        .leaflet-tooltip { font-family: 'Noto Sans KR', sans-serif; font-weight: 700; font-size: 12px; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.18); border-radius: 8px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        section { scroll-margin-top: 80px; }
+        @keyframes floatIn {
+            from { opacity: 0; transform: scale(.8) translateY(16px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .custom-icon { background: transparent; border: none; }
+        .map-pin-wrap { display: flex; flex-direction: column; align-items: center; }
+        .map-pin-dot {
+            width: 34px; height: 34px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: #fff;
+            border: 2.5px solid rgba(255,255,255,0.95);
+            box-shadow: 0 10px 18px rgba(15,23,42,0.18);
+            animation: floatIn .2s ease-out forwards;
+        }
+        .map-pin-label {
+            margin-top: 3px;
+            background: rgba(255,255,255,0.96);
+            color: #0f172a;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 1.2;
+            padding: 2px 6px;
+            border-radius: 6px;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(15,23,42,0.12);
+        }
+        .map-pin-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #004098;
+            color: #fff;
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            line-height: 1.2;
+            padding: 2px 5px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+        .map-bus { font-size: 22px; line-height: 1; filter: drop-shadow(0 4px 8px rgba(15,23,42,0.35)); }
+        .bus-inner { display: inline-block; transform-origin: center; transition: transform 0.3s ease; }
+        @media (max-width: 768px) {
+            #map { height: 460px; }
+            .map-pin-dot { animation-duration: .45s; }
+        }
+        .schedule-thumb {
+            display: block; width: 100%; max-width: 11rem; aspect-ratio: 4/3; object-fit: cover;
+            border-radius: 0.75rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(15,23,42,0.08); flex-shrink: 0;
+        }
+        .spot-cover { width: 100%; height: 14rem; object-fit: cover; display: block; }
+        @media (min-width: 768px) { .spot-cover { height: 16rem; } }
+        .schedule-media { display: flex; flex-direction: column; gap: 0.75rem; }
+        @media (min-width: 768px) {
+            .schedule-media { flex-direction: row; align-items: flex-start; gap: 1rem; }
+            .schedule-media .schedule-desc { flex: 1; min-width: 0; }
+        }
+        .ticket-punch-left {
+            position: absolute; top: 50%; left: -12px; transform: translateY(-50%);
+            width: 24px; height: 24px; background-color: #f0f9ff; border-radius: 50%; border-right: 1px solid #e2e8f0;
+        }
+        .ticket-punch-right {
+            position: absolute; top: 50%; right: -12px; transform: translateY(-50%);
+            width: 24px; height: 24px; background-color: #f0f9ff; border-radius: 50%; border-left: 1px solid #e2e8f0;
+        }
+        .weather-scroll-fade {
+            -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+            mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+        }
+        input:checked + span { text-decoration: line-through; color: #94a3b8; transition: all 0.3s ease; }
+
+        /* Day-of UI bar */
+        #day-of-bar {
+            display: none;
+            position: sticky;
+            top: 64px;
+            z-index: 45;
+            background: linear-gradient(90deg, #004098, #0369a1);
+            color: #fff;
+            padding: 10px 16px;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0,64,152,0.25);
+        }
+        #day-of-bar .day-of-label {
+            font-size: 12px; font-weight: 800; opacity: 0.9; white-space: nowrap;
+        }
+        #day-of-bar .day-of-btn {
+            padding: 7px 18px; border-radius: 999px; font-size: 13px; font-weight: 800;
+            cursor: pointer; border: none; outline: none; transition: all 0.18s;
+            white-space: nowrap;
+        }
+        #day-of-bar .day-of-btn:first-of-type { background: #fff; color: #004098; }
+        #day-of-bar .day-of-btn:first-of-type:hover { background: #dbeafe; }
+        #day-of-bar .day-of-btn:last-of-type { background: #f59e0b; color: #0f172a; }
+        #day-of-bar .day-of-btn:last-of-type:hover { background: #fcd34d; }
+
+        /* A4 print sheet */
+        #print-area {
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #1e293b;
+            line-height: 1.5;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        #print-area .print-header {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            border-bottom: 2px solid #004098; padding-bottom: 12px; margin-bottom: 18px;
+        }
+        #print-area .print-header img { height: 36px; object-fit: contain; }
+        #print-area .print-doc-info { text-align: right; font-size: 12px; color: #475569; }
+        #print-area .print-title { text-align: center; margin-bottom: 16px; }
+        #print-area .print-title h1 { font-size: 22px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px; margin: 0; }
+        #print-area .print-overview {
+            display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+            background: #f8fafc; border: 1px solid #94a3b8; border-radius: 6px;
+            padding: 10px 16px; margin-bottom: 16px; font-size: 13px;
+        }
+        #print-area .print-overview div { display: flex; gap: 6px; }
+        #print-area .print-overview .label { font-weight: 700; color: #004098; }
+        #print-area .print-table {
+            width: 100%; border-collapse: collapse; margin-bottom: 14px;
+            font-size: 13px; table-layout: fixed;
+        }
+        #print-area .print-table th,
+        #print-area .print-table td {
+            border: 1px solid #94a3b8; padding: 12px 14px; vertical-align: top; word-break: keep-all;
+        }
+        #print-area .print-table th {
+            background: #f8fafc; font-weight: 700; text-align: center; padding: 10px; font-size: 13.5px;
+        }
+        #print-area .col-date { width: 14%; text-align: center; font-weight: 700; background: #f8fafc; vertical-align: middle; }
+        #print-area .col-desc { width: 70%; }
+        #print-area .col-meal { width: 16%; text-align: center; vertical-align: middle; }
+        #print-area .day-divider td { border-top: 2px solid #004098; }
+        #print-area .time-flow { margin-bottom: 6px; font-weight: 500; }
+        #print-area .time-tag { display: inline-block; color: #004098; font-weight: 700; margin-right: 4px; }
+        #print-area .highlight { font-weight: 700; color: #0f172a; }
+        #print-area .desc-list { list-style: none; margin: 6px 0 0; padding-left: 4px; }
+        #print-area .desc-list li { position: relative; padding-left: 14px; margin-bottom: 5px; line-height: 1.55; }
+        #print-area .desc-list li::before {
+            content: '■'; font-size: 8px; position: absolute; left: 0; top: 5px; color: #004098;
+        }
+        #print-area .meal-wrapper {
+            display: flex; flex-direction: column; gap: 12px; justify-content: center;
+            height: 100%; text-align: left; padding-left: 4px;
+        }
+        #print-area .meal-simple { display: flex; align-items: flex-start; font-size: 13px; color: #1e293b; line-height: 1.4; }
+        #print-area .meal-simple strong { color: #004098; margin-right: 4px; width: 22px; flex-shrink: 0; }
+        #print-area .meal-menu { display: flex; flex-direction: column; }
+        #print-area .meal-sub { font-size: 12px; margin-top: 2px; color: #475569; }
+        #print-area .print-remarks {
+            font-size: 11.5px; color: #64748b; text-align: right; font-weight: 500; margin-bottom: 16px;
+        }
+        #print-area .print-footer {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            padding-top: 14px; border-top: 1px solid #e2e8f0;
+        }
+        #print-area .print-footer .brand-link {
+            font-size: 11px; color: #6c757d; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
+        }
+        #print-area .print-footer .manager-info {
+            text-align: right; border-left: 3px solid #004098; padding-left: 12px;
+        }
+        #print-area .print-footer .names { color: #0f172a; font-weight: 700; font-size: 13px; }
+        #print-area .print-page { width: 100%; }
+        #print-area .print-page-2 { page-break-before: always; break-before: page; padding-top: 4px; }
+        #print-area .print-checklist {
+            border: 1px solid #94a3b8; border-radius: 8px; padding: 14px 16px;
+            background: #fff; margin-bottom: 18px;
+        }
+        #print-area .print-checklist h2 {
+            font-size: 15px; font-weight: 800; color: #0f172a; margin: 0 0 12px 0;
+        }
+        #print-area .print-checklist-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px 18px;
+            font-size: 12.5px; color: #334155;
+        }
+        #print-area .print-check-item {
+            display: flex; align-items: flex-start; gap: 8px; line-height: 1.4;
+        }
+        #print-area .print-check-box {
+            width: 14px; height: 14px; border: 1.5px solid #004098; border-radius: 2px;
+            flex-shrink: 0; margin-top: 2px;
+        }
+        #print-area .print-qr-box {
+            display: flex; align-items: center; gap: 18px;
+            padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 8px;
+            background: #f8fafc; margin-bottom: 18px;
+        }
+        #print-area .print-qr-box img {
+            width: 96px; height: 96px; border: 1px solid #cbd5e1; border-radius: 4px;
+            background: #fff; flex-shrink: 0;
+        }
+        #print-area .print-qr-box .qr-copy { font-size: 12.5px; color: #334155; line-height: 1.55; }
+        #print-area .print-qr-box .qr-copy strong { color: #004098; font-size: 14px; display: block; margin-bottom: 4px; }
+        #print-area .print-qr-box .qr-url { color: #64748b; font-size: 11px; word-break: break-all; }
+        #print-area .print-note-list {
+            font-size: 12px; color: #475569; line-height: 1.55; margin: 0 0 16px 0; padding-left: 18px;
+        }
+        @media screen { #print-area { display: none !important; } }
+        @media print {
+            @page { size: A4 portrait; margin: 12mm 10mm; }
+            body { background: white !important; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .print\:hidden, header, footer, section:not(#print-area), .no-print, #toast, #custom-confirm, #day-of-bar { display: none !important; }
+            #print-area { display: block !important; }
+            #print-area .print-table { border: 2px solid #1e293b; }
+            #print-area .print-table th { border: 1px solid #1e293b; background: #f8fafc !important; }
+            #print-area .print-table td { border: 1px solid #1e293b; }
+            #print-area .day-divider td { border-top: 2px solid #1e293b !important; }
+            #print-area .print-page-2 { page-break-before: always; break-before: page; }
+            tr, td, .print-checklist, .print-qr-box { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="antialiased pb-20 md:pb-0">
+
+<div class="print:hidden">
+
+<!-- Header -->
+<header class="bg-white/95 backdrop-blur-md shadow-md sticky top-0 z-50">
+    <nav class="container mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-2 shrink-0">
+            <a href="http://tourmaker.kr" target="_blank" rel="noopener">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHfgIX70O5k6Anuo0UgALIdaG9jSga9auHu3uyz0uEirylGPAJnjN_qQbvEGMUvPqUQf_g9FMNUHRxlDcUBf4vZ3Mpy4TnA9WxbmzWYK11gt2zuy_Irl4wctNFjcjLyPo0GPXV792o_J7L9guRMuDfeC1gy7USwywjYbECZgzcsHybuGRRAXAnO1eNmP8/s320/logo.png" alt="Tourmaker" class="h-6 md:h-7">
+            </a>
+            <span id="d-day-badge" class="hidden ml-1"></span>
+        </div>
+        <div class="flex-1 overflow-x-auto no-scrollbar ml-4 md:ml-6">
+            <div class="flex items-center space-x-1 md:space-x-4 whitespace-nowrap pr-4">
+                <a href="#home" class="px-3 py-2 text-sm font-bold text-slate-600 hover:text-[#004098] rounded-lg">홈</a>
+                <a href="#highlights" class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#004098] rounded-lg">포인트</a>
+                <a href="#about" class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#004098] rounded-lg">동해안</a>
+                <a href="#transport" class="px-3 py-2 text-sm font-bold text-sky-600 hover:bg-sky-50 rounded-lg"><i class="fa-solid fa-bus mr-1"></i>이동안내</a>
+                <a href="#map-section" class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#004098] rounded-lg">여행동선</a>
+                <a href="#schedule" class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#004098] rounded-lg">세부일정</a>
+                <a href="#spots" class="px-3 py-2 text-sm font-bold text-emerald-700 hover:bg-emerald-50 rounded-lg"><i class="fa-solid fa-binoculars mr-1"></i>관광지</a>
+                <a href="#weather-outfit" class="px-3 py-2 text-sm font-bold text-blue-600 hover:bg-blue-50 rounded-lg"><i class="fa-solid fa-cloud-sun-rain mr-1"></i>날씨</a>
+                <a href="#toolkit" class="px-3 py-2 text-sm font-bold text-purple-600 hover:bg-purple-50 rounded-lg"><i class="fa-solid fa-suitcase-rolling mr-1"></i>준비물</a>
+                <a href="#contact" class="px-3 py-2 text-sm font-bold text-red-600 hover:bg-red-50 rounded-lg"><i class="fa-solid fa-phone-volume mr-1"></i>비상연락망</a>
+                <a href="#tourmaker" class="px-3 py-2 text-sm font-bold text-[#004098] hover:bg-blue-50 rounded-lg"><i class="fa-solid fa-compass mr-1"></i>투어메이커</a>
+            </div>
+        </div>
+        <button onclick="shareLink()" class="shrink-0 p-2 text-slate-500 hover:text-[#004098] ml-2" aria-label="공유"><i class="fa-solid fa-share-nodes text-xl"></i></button>
+    </nav>
+</header>
+
+<!-- Day-of UI bar (헤더 바로 아래 · 행사 당일 2026-10-07만 표시) -->
+<div id="day-of-bar" role="banner" aria-label="당일 안내 바">
+    <span class="day-of-label">📅 오늘이 여행 당일입니다!</span>
+    <button class="day-of-btn" onclick="scrollToSchedule()">오늘의 일정</button>
+    <button class="day-of-btn" onclick="scrollToMap()">당일 동선</button>
+</div>
+
+<!-- Hero -->
+<section id="home" class="hero-bg min-h-[65vh] flex items-center justify-center text-center px-4">
+    <div class="animate-fade-in-up text-white">
+        <div class="bg-white/10 backdrop-blur border border-white/25 px-5 py-2 rounded-full inline-flex items-center gap-2 mb-6 text-white/90 shadow-xl">
+            <i class="fa-solid fa-water text-sky-300 text-lg"></i>
+            <span class="text-sm md:text-base font-bold tracking-tight">일반성인단체 · 동해안 당일 여정</span>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-black mb-4 drop-shadow-2xl font-title leading-tight">
+            동해안 당일<br>
+            <span class="text-sky-300">바다 여행</span>
+        </h1>
+        <p class="text-lg md:text-2xl text-sky-200 font-bold tracking-wide mb-8 drop-shadow-lg">
+            "태백을 떠나 맑은 동해를 만나는 하루"
+        </p>
+        <div>
+            <p class="text-xl md:text-2xl text-white font-bold tracking-wide mb-2 opacity-90">2026. 10. 07 (수)</p>
+            <p class="text-sm md:text-base text-slate-200 font-medium tracking-widest uppercase opacity-80">East Coast Day Trip · Taebaek → Goseong → Gangneung</p>
+        </div>
+    </div>
+</section>
+
+<!-- Highlights -->
+<section id="highlights" class="py-16 bg-white relative -mt-10 rounded-t-[3rem] z-10 shadow-[0_-15px_40px_rgba(0,0,0,0.15)]">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <span class="text-[#004098] font-black tracking-[0.2em] text-xs uppercase">Tour Points</span>
+            <h2 class="text-2xl md:text-4xl font-bold text-slate-800 mt-2 font-title">이번 여정의 3가지 핵심</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div class="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                <div class="w-16 h-16 bg-sky-100 rounded-2xl flex items-center justify-center mb-6 text-4xl">🌊</div>
+                <h3 class="text-2xl font-bold text-slate-800 mb-3 font-title">동해 해안 산책</h3>
+                <p class="text-slate-600 text-sm leading-relaxed mb-4">고성 송지호 바다 둘레길에서 청정 동해와 소나무 숲이 어우러진 가을 해안 산책을 즐깁니다.</p>
+                <span class="inline-block bg-sky-600 text-white text-xs px-3 py-1 rounded-full font-bold">자연 힐링</span>
+            </div>
+            <div class="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mb-6 text-4xl">🐟</div>
+                <h3 class="text-2xl font-bold text-slate-800 mb-3 font-title">동해 해산물 미식</h3>
+                <p class="text-slate-600 text-sm leading-relaxed mb-4">주문진항 어시장에서 싱싱한 동해 수산물을 구경하고, 신선한 회정식으로 든든하게 점심을 즐깁니다.</p>
+                <span class="inline-block bg-orange-500 text-white text-xs px-3 py-1 rounded-full font-bold">해산물 미식</span>
+            </div>
+            <div class="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mb-6 text-4xl">☕</div>
+                <h3 class="text-2xl font-bold text-slate-800 mb-3 font-title">강릉 커피 & 영성</h3>
+                <p class="text-slate-600 text-sm leading-relaxed mb-4">양양 휴휴암에서 동해를 마주하는 명상 힐링 후, 강릉 안목 커피거리에서 바다 전망과 함께 커피를 즐깁니다.</p>
+                <span class="inline-block bg-amber-600 text-white text-xs px-3 py-1 rounded-full font-bold">힐링·커피</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About 동해안 -->
+<section id="about" class="py-16 bg-slate-50 border-t border-slate-100">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col lg:flex-row items-center gap-12 max-w-6xl mx-auto">
+            <div class="lg:w-1/2 relative">
+                <div class="absolute -inset-4 bg-sky-100 rounded-[2.5rem] transform -rotate-3 z-0"></div>
+                <img src="assets/images/about-coast.jpg" alt="강원 동해안 해안 전경" class="relative z-10 rounded-[2rem] shadow-xl w-full object-cover h-[400px]">
+                <div class="absolute -bottom-6 -right-6 bg-white p-4 rounded-2xl shadow-lg z-20 font-bold text-[#004098] flex items-center gap-2">
+                    <i class="fa-solid fa-water text-2xl"></i> 강원 동해안
+                </div>
+            </div>
+            <div class="lg:w-1/2 space-y-6">
+                <span class="text-sky-500 font-black tracking-widest text-xs uppercase">Welcome to the East Coast</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 font-title leading-tight">
+                    맑은 동해가 품은<br>
+                    <span class="text-[#004098]">강원 해안의 하루</span>
+                </h2>
+                <p class="text-slate-600 leading-relaxed text-justify">
+                    강원 동해안은 고성부터 삼척까지 이어지는 청정 해변과 기암절벽, 백사장이 어우러진 자연 여행의 보고입니다. 철새도래지 송지호의 석호 풍경부터, 파도 위 휴휴암의 관음보살, 국내 커피 문화의 발상지 강릉 안목 커피거리까지—하루에 담기에 벅찰 만큼 다채로운 풍경이 펼쳐집니다.
+                </p>
+                <p class="text-slate-600 leading-relaxed text-justify">
+                    이번 여정은 태백을 이른 아침에 출발해 가장 북쪽의 고성 송지호에서 해안 둘레길을 걷고, 주문진에서 싱싱한 동해 회정식으로 점심을 즐깁니다. 오후에는 양양 휴휴암에서 동해를 마주하며 잠시 마음을 고르고, 강릉 안목 커피거리의 바닷바람 속 커피 한 잔으로 마무리합니다. 귀환 길에는 도계에서 따뜻한 석식으로 하루를 마무리합니다.
+                </p>
+                <div class="flex flex-wrap gap-3 pt-2">
+                    <span class="bg-sky-100 text-sky-700 px-4 py-1.5 rounded-full text-sm font-bold">고성 송지호</span>
+                    <span class="bg-orange-100 text-orange-700 px-4 py-1.5 rounded-full text-sm font-bold">주문진 어시장</span>
+                    <span class="bg-emerald-100 text-emerald-700 px-4 py-1.5 rounded-full text-sm font-bold">양양 휴휴암</span>
+                    <span class="bg-amber-100 text-amber-700 px-4 py-1.5 rounded-full text-sm font-bold">강릉 안목</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Transport -->
+<section id="transport" class="py-16 bg-sky-50 border-t border-sky-100">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <div class="text-center mb-10">
+            <span class="text-sky-500 font-black tracking-widest text-xs uppercase">Coach Schedule</span>
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mt-2 font-title">전세버스 이동 안내</h2>
+            <p class="text-slate-500 text-sm mt-2">당일 전 구간 전세버스로 안전하게 이동합니다.</p>
+        </div>
+        <div class="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden relative">
+            <div class="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-[#004098] to-sky-400"></div>
+            <div class="ticket-punch-left hidden sm:block"></div>
+            <div class="ticket-punch-right hidden sm:block"></div>
+            <div class="p-8 md:p-10 space-y-5">
+                <div class="flex items-center gap-4 border-b border-dashed border-slate-200 pb-6">
+                    <div class="w-12 h-12 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center text-2xl"><i class="fa-solid fa-bus"></i></div>
+                    <div>
+                        <h3 class="font-black text-xl text-slate-800">전세버스 당일 왕복</h3>
+                        <p class="text-sm font-bold text-slate-500">태백 ↔ 고성(송지호) ↔ 주문진 ↔ 양양 ↔ 강릉 ↔ 도계 ↔ 태백</p>
+                    </div>
+                </div>
+                <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">오전 출발</p>
+                    <p class="text-3xl font-black text-slate-800">07:00</p>
+                    <p class="text-sm font-bold text-slate-500 mt-1">태백 집결 · 출발</p>
+                </div>
+                <div class="bg-amber-50 border border-amber-100 rounded-2xl p-5 text-sm text-amber-800 leading-relaxed">
+                    <i class="fa-solid fa-circle-info mr-1"></i>
+                    집결 장소·좌석 배정은 행사 임박 시 별도 안내드립니다. 출발 10분 전 탑승을 부탁드립니다. 버스 승무원: 김현철 010-3742-7993
+                </div>
+                <!-- 이동 동선 요약 -->
+                <div class="border-t border-slate-100 pt-5">
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">당일 이동 동선</p>
+                    <div class="flex flex-col gap-3">
+                        <div class="flex items-center gap-3 text-sm">
+                            <span class="w-7 h-7 rounded-full bg-[#004098] text-white flex items-center justify-center text-xs font-black shrink-0">출</span>
+                            <span class="font-bold text-slate-700">태백 출발</span>
+                            <span class="text-xs text-slate-400 ml-auto font-bold">07:00</span>
+                        </div>
+                        <div class="ml-3.5 border-l-2 border-dashed border-sky-200 pl-6 space-y-3">
+                            <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-water text-sky-500 w-4"></i>고성 송지호 바다 둘레길</div>
+                            <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-fish text-orange-500 w-4"></i>주문진 회정식 중식 + 어시장</div>
+                            <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-om text-emerald-600 w-4"></i>양양 휴휴암</div>
+                            <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-mug-hot text-amber-600 w-4"></i>강릉 안목 커피거리</div>
+                            <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-bowl-hot text-red-500 w-4"></i>도계 석식 (해물찜 또는 갈비탕)</div>
+                        </div>
+                        <div class="flex items-center gap-3 text-sm">
+                            <span class="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-black shrink-0">도</span>
+                            <span class="font-bold text-slate-700">태백 해산</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section id="map-section" class="py-16 bg-white border-t border-slate-100">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-bold text-slate-800 font-title tracking-tight">한눈에 보는 여행 동선</h2>
+            <p class="text-slate-500 mt-2 text-sm italic">실제 도로를 따라 이동 순서가 천천히 그려집니다. 오전·오후·귀환을 누르면 해당 구간만 볼 수 있습니다.</p>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-2 mb-3">
+            <button onclick="filterMap('all')" id="btn-map-all" class="map-btn px-6 py-2 rounded-full text-sm font-bold bg-slate-800 text-white shadow-lg transition-all">전체 일정</button>
+            <button onclick="filterMap('morning')" id="btn-map-morning" class="map-btn px-6 py-2 rounded-full text-sm font-bold bg-white border border-slate-200 text-slate-600 hover:bg-orange-50 transition-all">오전</button>
+            <button onclick="filterMap('afternoon')" id="btn-map-afternoon" class="map-btn px-6 py-2 rounded-full text-sm font-bold bg-white border border-slate-200 text-slate-600 hover:bg-blue-50 transition-all">오후</button>
+            <button onclick="filterMap('return')" id="btn-map-return" class="map-btn px-6 py-2 rounded-full text-sm font-bold bg-white border border-slate-200 text-slate-600 hover:bg-green-50 transition-all">귀환</button>
+        </div>
+        <p class="text-center text-[11px] font-black text-[#004098] mb-2">출발 · 도착 · 태백</p>
+        <p id="map-hint" class="text-center text-xs text-slate-500 mb-4 font-medium">전체 일정 — 태백에서 출발해 고성·주문진·양양·강릉·도계를 거쳐 귀환까지</p>
+
+        <div class="max-w-5xl mx-auto border-8 border-slate-100 rounded-[2.5rem] shadow-xl overflow-hidden bg-white relative z-10">
+            <div id="map"></div>
+            <div id="map-status" class="absolute top-4 left-4 z-[400] bg-white/90 backdrop-blur px-3 py-1.5 rounded-xl shadow font-bold text-xs text-slate-700 pointer-events-none">
+                <i class="fa-solid fa-flag-checkered text-orange-500 mr-1"></i><span id="map-status-text">출발·도착 · 태백</span>
+            </div>
+        </div>
+        <div class="max-w-5xl mx-auto mt-6 flex flex-wrap justify-center gap-6 text-[11px] font-bold text-slate-500">
+            <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#f97316]"></span>오전 (태백→송지호→주문진)</div>
+            <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#3b82f6]"></span>오후 (주문진→휴휴암→안목)</div>
+            <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#22c55e]"></span>귀환 (안목→도계→태백)</div>
+        </div>
+    </div>
+</section>
+
+<!-- Schedule -->
+<section id="schedule" class="py-16 bg-slate-50 border-t border-slate-100">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-10">
+                <div class="flex justify-center items-center gap-3 mb-2 flex-wrap">
+                    <h2 class="text-2xl md:text-3xl font-black font-title">세부 일정표</h2>
+                    <button onclick="printSchedule()" class="no-print bg-[#004098] text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md hover:bg-[#002d6b] transition flex items-center gap-2">
+                        <i class="fa-solid fa-print"></i> 일정표 인쇄하기
+                    </button>
+                </div>
+                <p class="text-slate-500 text-sm mt-2">상기 상세 일정은 현지 사정에 의해 변동될 수 있습니다.</p>
+            </div>
+
+            <div class="bg-white rounded-[2rem] shadow-lg border border-slate-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-[#004098] to-sky-600 text-white px-6 py-5 flex items-center justify-between flex-wrap gap-3">
+                    <div>
+                        <p class="text-xs font-bold opacity-80 uppercase tracking-widest">Day Trip</p>
+                        <h3 class="text-xl font-black">10. 7 (수) · 태백 ↔ 동해안</h3>
+                    </div>
+                    <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold">당일 · 숙박 없음</span>
+                </div>
+                <div class="p-6 md:p-8 space-y-8">
+
+                    <!-- 출발 -->
+                    <div class="schedule-media">
+                        <div class="schedule-desc space-y-1">
+                            <p class="text-xs font-black text-[#004098] tracking-widest">07:00 · 출발</p>
+                            <h4 class="font-bold text-lg text-slate-800">태백 집결 · 출발</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed">전세버스에 탑승하여 고성 방면으로 이동합니다. 출발 전 좌석 배정·인원 확인을 합니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- 송지호 -->
+                    <div class="schedule-media">
+                        <img src="assets/images/day1-songjiho.jpg" alt="고성 송지호 바다 둘레길" class="schedule-thumb">
+                        <div class="schedule-desc space-y-1">
+                            <p class="text-xs font-black text-sky-600 tracking-widest">오전 · 도보 산책</p>
+                            <h4 class="font-bold text-lg text-slate-800">고성 송지호 바다 둘레길</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed">동해와 맞닿은 천연 석호(潟湖) 송지호 해안 둘레길을 걷습니다. 철새도래지로 유명한 이곳은 소나무 숲과 청정 동해가 어우러진 가을 산책 명소입니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- 주문진 -->
+                    <div class="schedule-media">
+                        <img src="assets/images/day1-jumunjin.jpg" alt="주문진 어시장" class="schedule-thumb">
+                        <div class="schedule-desc space-y-1">
+                            <p class="text-xs font-black text-orange-500 tracking-widest">중식 · 어시장</p>
+                            <h4 class="font-bold text-lg text-slate-800">주문진 회정식 & 어시장</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed">동해안 최대 어항 중 하나인 주문진항에서 싱싱한 동해 회정식으로 점심을 즐깁니다. 식후 주문진 어시장을 둘러보며 갓 잡은 제철 수산물도 구경하세요.</p>
+                        </div>
+                    </div>
+
+                    <!-- 휴휴암 -->
+                    <div class="schedule-media">
+                        <img src="assets/images/day1-huhuham.jpg" alt="양양 휴휴암" class="schedule-thumb">
+                        <div class="schedule-desc space-y-1">
+                            <p class="text-xs font-black text-emerald-600 tracking-widest">오후 · 힐링</p>
+                            <h4 class="font-bold text-lg text-slate-800">양양 휴휴암</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed">동해 바닷가 절벽 위에 자리한 암자 휴휴암. 파도 소리와 함께 바다를 향해 세워진 해수관음보살상 앞에서 잠시 발걸음을 멈추고 마음을 고릅니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- 안목 커피거리 -->
+                    <div class="schedule-media">
+                        <img src="assets/images/day1-anmok.jpg" alt="강릉 안목 커피거리" class="schedule-thumb">
+                        <div class="schedule-desc space-y-1">
+                            <p class="text-xs font-black text-amber-600 tracking-widest">오후 · 자유시간</p>
+                            <h4 class="font-bold text-lg text-slate-800">강릉 안목 커피거리</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed">국내 최초 커피 자판기가 탄생한 해안 거리. 바다를 바라보며 강릉 커피 한 잔의 여유를 즐깁니다. 해변을 따라 개성 있는 소규모 카페들이 즐비합니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- 도계 석식 -->
+                    <div class="schedule-media">
+                        <div class="schedule-desc space-y-1">
+                            <p class="text-xs font-black text-red-600 tracking-widest">석식</p>
+                            <h4 class="font-bold text-lg text-slate-800">도계 석식</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed">귀환 길에 도계에서 따뜻한 저녁 식사로 하루를 마무리합니다. <span class="text-slate-700 font-medium">해물찜 또는 갈비탕</span> 중 현장 상황에 맞추어 제공됩니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- 태백 해산 -->
+                    <div class="bg-[#004098]/5 rounded-2xl p-5 border border-[#004098]/10">
+                        <p class="text-xs font-black text-[#004098] tracking-widest">귀환 · 해산</p>
+                        <h4 class="font-bold text-lg text-slate-800 mt-1">태백 도착 · 해산</h4>
+                        <p class="text-sm text-slate-500 mt-1">안전하게 도착하신 후 해산합니다. 오늘 하루도 수고하셨습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Spot Guide -->
+<section id="spots" class="py-16 bg-white border-t border-slate-100">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center mb-12">
+            <span class="text-emerald-600 font-black tracking-widest text-xs uppercase">Spot Guide</span>
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mt-2 font-title">오늘의 핵심 관광지</h2>
+            <p class="text-slate-500 text-sm md:text-base mt-3 leading-relaxed">일행과 함께 둘러보는 동해안의 네 명소입니다. 천천히, 안전하게, 여유롭게 즐기세요.</p>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-8">
+
+            <!-- 송지호 -->
+            <article class="bg-slate-50 rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm">
+                <img src="assets/images/day1-songjiho.jpg" alt="고성 송지호 바다 둘레길 전경" class="spot-cover">
+                <div class="p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-sky-600 text-white text-xs font-black px-3 py-1 rounded-full">오전</span>
+                        <span class="text-xs font-bold text-sky-700">강원 고성군</span>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-black text-slate-800 font-title">송지호 바다 둘레길</h3>
+                    <p class="text-slate-600 mt-3 leading-relaxed">동해와 접한 천연 석호 송지호. 철새도래지이자 해안 생태계의 보고로, 둘레길을 따라 소나무 숲과 동해 조망이 이어집니다.</p>
+                    <ul class="mt-5 space-y-2.5 text-sm text-slate-600 leading-relaxed">
+                        <li class="flex gap-2"><i class="fa-solid fa-location-dot text-sky-600 mt-1 shrink-0"></i><span>강원특별자치도 고성군 죽왕면 오봉리 일대</span></li>
+                        <li class="flex gap-2"><i class="fa-solid fa-person-walking text-sky-600 mt-1 shrink-0"></i><span>둘레길 약 4.6km, 평탄한 해안로로 편안하게 걸을 수 있습니다. 인솔자 안내에 따라 이동해 주세요.</span></li>
+                        <li class="flex gap-2"><i class="fa-solid fa-binoculars text-sky-600 mt-1 shrink-0"></i><span>가을 철새 도래 시기로, 운이 좋으면 두루미·기러기 등 다양한 철새를 관찰할 수 있습니다.</span></li>
+                        <li class="flex gap-2"><i class="fa-solid fa-shoe-prints text-sky-600 mt-1 shrink-0"></i><span>편한 운동화 필수. 해풍이 강할 수 있으므로 얇은 겉옷을 준비해 주세요.</span></li>
+                    </ul>
+                </div>
+            </article>
+
+            <!-- 주문진 -->
+            <article class="bg-slate-50 rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm">
+                <img src="assets/images/day1-jumunjin.jpg" alt="주문진 어시장 수산물" class="spot-cover">
+                <div class="p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-orange-500 text-white text-xs font-black px-3 py-1 rounded-full">중식</span>
+                        <span class="text-xs font-bold text-orange-700">강릉시 주문진읍</span>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-black text-slate-800 font-title">주문진 회정식 & 어시장</h3>
+                    <p class="text-slate-600 mt-3 leading-relaxed">동해안 최대 어항 중 하나인 주문진항. 싱싱한 동해 회정식으로 점심을 들고, 어시장에서 갓 잡은 제철 수산물을 직접 구경합니다.</p>
+                    <ul class="mt-5 space-y-2.5 text-sm text-slate-600 leading-relaxed">
+                        <li class="flex gap-2"><i class="fa-solid fa-location-dot text-orange-500 mt-1 shrink-0"></i><span>강원특별자치도 강릉시 주문진읍 주문북로 일대</span></li>
+                        <li class="flex gap-2"><i class="fa-solid fa-fish text-orange-500 mt-1 shrink-0"></i><span>10월 제철 수산물: 오징어·가자미·대게·꽁치 등 동해 특산물이 풍부합니다.</span></li>
+                        <li class="flex gap-2"><i class="fa-solid fa-store text-orange-500 mt-1 shrink-0"></i><span>어시장 내 수산물 구입 후 인근 식당에서 회를 즐길 수 있습니다. 단체 집결 시간에 주의해 주세요.</span></li>
+                    </ul>
+                </div>
+            </article>
+
+            <!-- 휴휴암 -->
+            <article class="bg-slate-50 rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm">
+                <img src="assets/images/day1-huhuham.jpg" alt="양양 휴휴암 해수관음보살" class="spot-cover">
+                <div class="p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-emerald-600 text-white text-xs font-black px-3 py-1 rounded-full">오후</span>
+                        <span class="text-xs font-bold text-emerald-700">강원 양양군</span>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-black text-slate-800 font-title">양양 휴휴암</h3>
+                    <p class="text-slate-600 mt-3 leading-relaxed">동해 바닷가 절벽 위에 자리한 소박하고 아름다운 암자. 파도 소리 속에서 동해를 향해 세워진 해수관음보살상이 평온함을 줍니다.</p>
+                    <ul class="mt-5 space-y-2.5 text-sm text-slate-600 leading-relaxed">
+                        <li class="flex gap-2"><i class="fa-solid fa-location-dot text-emerald-600 mt-1 shrink-0"></i><span>강원특별자치도 양양군 현북면 도리 일대</span></li>
+                        <li class="flex gap-2"><i class="fa-solid fa-om text-emerald-600 mt-1 shrink-0"></i><span>암자 규모가 작고 계단이 있으므로 천천히 이동해 주세요. 조용한 명상·기도 공간입니다.</span></li>
+                        <li class="flex gap-2"><i class="fa-solid fa-camera text-emerald-600 mt-1 shrink-0"></i><span>해수관음보살상과 동해 조망이 포토 명소. 바닷바람이 강할 수 있으므로 겉옷을 챙기세요.</span></li>
+                    </ul>
+                </div>
+            </article>
+
+            <!-- 안목 커피거리 -->
+            <article class="bg-slate-50 rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm">
+                <img src="assets/images/day1-anmok.jpg" alt="강릉 안목해변 커피거리" class="spot-cover">
+                <div class="p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-amber-500 text-white text-xs font-black px-3 py-1 rounded-full">오후</span>
+                        <span class="text-xs font-bold text-amber-700">강릉시 견소동</span>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-black text-slate-800 font-title">강릉 안목 커피거리</h3>
+                    <p class="text-slate-600 mt-3 leading-relaxed">국내 최초 커피 자판기가 생긴 해안 거리로 강릉 커피 문화의 발상지. 바다를 바라보며 테이크아웃 커피 한 잔의 여유를 즐기는 명소입니다.</p>
+                    <ul class="mt-5 space-y-2.5 text-sm text-slate-600 leading-relaxed">
+                        <li class="flex gap-2"><i class="fa-solid fa-location-dot text-amber-600 mt-1 shrink-0"></i><span>강원특별자치도 강릉시 창해로 14번길 일대 (안목해변 커피거리)</span></li>
+                        <li class="flex gap-2"><i class="fa-solid fa-mug-hot text-amber-600 mt-1 shrink-0"></i><span>거리를 따라 다양한 개성의 커피숍이 늘어서 있습니다. 창가·야외 좌석에서 동해 전망을 함께 즐겨보세요.</span></li>
+                        <li class="flex gap-2"><i class="fa-solid fa-clock text-amber-600 mt-1 shrink-0"></i><span>자유 시간 후 인솔자 안내에 따라 집결 장소로 이동해 주세요.</span></li>
+                    </ul>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- Weather -->
+<section id="weather-outfit" class="py-16 bg-white border-t border-slate-100">
+    <div class="container mx-auto px-4 max-w-5xl">
+        <div class="text-center mb-10">
+            <span class="text-blue-500 font-black tracking-widest text-xs uppercase">Weather & Outfit</span>
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mt-2 font-title">현지 주간 날씨 & 옷차림 가이드</h2>
+            <p class="text-slate-500 text-sm mt-2">행사 1주일 전부터 현지 날씨가 정확히 예보됩니다.</p>
+        </div>
+        <div class="bg-slate-50 rounded-3xl p-6 border border-slate-100 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-slate-800">강릉 현재 예보 <span class="text-xs font-normal text-slate-400">(동해안 대표 관측소)</span></h3>
+                <div class="text-xs text-slate-400">Open-Meteo API</div>
+            </div>
+            <div id="weather-gangneung" class="flex gap-2 overflow-x-auto weather-scroll-fade pb-2"></div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex gap-4">
+                <div class="w-12 h-12 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center shrink-0 text-xl"><i class="fa-solid fa-shirt"></i></div>
+                <div>
+                    <h4 class="font-bold text-slate-800 mb-1">기본 옷차림 (초가을)</h4>
+                    <p class="text-sm text-slate-500 leading-relaxed">10월 초 동해안은 낮에는 선선하지만 해풍으로 체감온도가 낮습니다. 긴팔·얇은 겉옷 필수.</p>
+                </div>
+            </div>
+            <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex gap-4">
+                <div class="w-12 h-12 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center shrink-0 text-xl"><i class="fa-solid fa-shoe-prints"></i></div>
+                <div>
+                    <h4 class="font-bold text-slate-800 mb-1">편안한 신발</h4>
+                    <p class="text-sm text-slate-500 leading-relaxed">송지호 둘레길 산책과 휴휴암 계단이 포함되므로 발이 편한 운동화를 꼭 챙겨 주세요.</p>
+                </div>
+            </div>
+            <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex gap-4">
+                <div class="w-12 h-12 bg-sky-100 text-sky-500 rounded-full flex items-center justify-center shrink-0 text-xl"><i class="fa-solid fa-cloud-sun-rain"></i></div>
+                <div>
+                    <h4 class="font-bold text-slate-800 mb-1">우천 대비</h4>
+                    <p class="text-sm text-slate-500 leading-relaxed">동해안은 날씨 변화가 빠릅니다. 접이식 우산·가벼운 바람막이를 반드시 준비해 주세요.</p>
+                </div>
+            </div>
+            <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex gap-4">
+                <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center shrink-0 text-xl"><i class="fa-solid fa-bus"></i></div>
+                <div>
+                    <h4 class="font-bold text-slate-800 mb-1">장거리 이동 대비</h4>
+                    <p class="text-sm text-slate-500 leading-relaxed">이른 출발·저녁 귀환 장거리 여정. 멀미약·개인 상비약을 챙기시고 보조배터리도 준비해 주세요.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Toolkit -->
+<section id="toolkit" class="py-16 bg-slate-50 border-t border-slate-100">
+    <div class="container mx-auto px-4 max-w-5xl">
+        <div class="text-center mb-10">
+            <span class="text-purple-500 font-black tracking-widest text-xs uppercase">Smart Toolkit</span>
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mt-2 font-title">스마트 체크리스트 & 메모장</h2>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-sm border border-slate-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2"><i class="fa-solid fa-clipboard-check text-purple-500"></i> 당일 여행 준비물</h3>
+                    <button onclick="promptResetChecklist()" class="text-xs font-bold text-slate-400 hover:text-red-500">초기화</button>
+                </div>
+                <div id="checklist-container" class="space-y-2"></div>
+            </div>
+            <div class="bg-yellow-50 rounded-3xl p-6 lg:p-8 shadow-sm border border-yellow-200 flex flex-col">
+                <h3 class="font-bold text-lg text-slate-800 mb-2 flex items-center gap-2"><i class="fa-solid fa-pen-to-square text-yellow-600"></i> 현장 메모장</h3>
+                <p class="text-xs text-yellow-700 mb-4">* 작성 내용은 이 기기에만 저장됩니다.</p>
+                <textarea id="travel-memo" class="w-full flex-1 min-h-[280px] p-5 rounded-2xl border border-yellow-300 bg-white/70 focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none text-slate-700 text-sm leading-relaxed" placeholder="✔ 함께 찍고 싶은 장소&#10;✔ 식사·방문 중 메모&#10;✔ 다음에 나누고 싶은 이야기"></textarea>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact -->
+<section id="contact" class="py-20 bg-white border-t border-slate-100">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-slate-800 font-title">🚨 비상 연락망</h2>
+            <p class="text-sm text-slate-500 mt-2">안전하고 편안한 동해안 당일 여행을 위해 투어메이커가 함께합니다.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            <div class="bg-slate-50 p-7 rounded-[2.5rem] border border-slate-100 flex flex-col items-center text-center group hover:bg-orange-50 transition-all">
+                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-user-tie text-orange-600 text-2xl"></i>
+                </div>
+                <h4 class="font-bold text-lg text-slate-800">투어메이커 총괄</h4>
+                <p class="text-xs text-slate-500 mt-1 mb-4">행사 기획 및 총괄 관리</p>
+                <a href="tel:010-9443-7881" class="w-full bg-orange-600 text-white px-4 py-2.5 rounded-xl font-bold shadow-md hover:bg-orange-700 transition text-sm text-center">이재명 대표<br class="md:hidden">010-9443-7881</a>
+            </div>
+            <div class="bg-slate-50 p-7 rounded-[2.5rem] border border-slate-100 flex flex-col items-center text-center group hover:bg-blue-50 transition-all">
+                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-map-location-dot text-blue-600 text-2xl"></i>
+                </div>
+                <h4 class="font-bold text-lg text-slate-800">행사 담당</h4>
+                <p class="text-xs text-slate-500 mt-1 mb-4">일정 기획 및 담당 관리</p>
+                <a href="tel:010-3841-1361" class="w-full bg-blue-600 text-white px-4 py-2.5 rounded-xl font-bold shadow-md hover:bg-blue-700 transition text-sm text-center">정두영 이사<br class="md:hidden">010-3841-1361</a>
+            </div>
+            <div class="bg-slate-50 p-7 rounded-[2.5rem] border border-slate-100 flex flex-col items-center text-center group hover:bg-sky-50 transition-all">
+                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-bus text-sky-600 text-2xl"></i>
+                </div>
+                <h4 class="font-bold text-lg text-slate-800">버스 승무원</h4>
+                <p class="text-xs text-slate-500 mt-1 mb-4">전 구간 이동 지원</p>
+                <a href="tel:010-3742-7993" class="w-full bg-sky-600 text-white px-4 py-2.5 rounded-xl font-bold shadow-md hover:bg-sky-700 transition text-sm text-center">김현철<br class="md:hidden">010-3742-7993</a>
+            </div>
+            <div class="bg-slate-50 p-7 rounded-[2.5rem] border border-slate-100 flex flex-col items-center text-center group hover:bg-teal-50 transition-all">
+                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-headset text-teal-600 text-2xl"></i>
+                </div>
+                <h4 class="font-bold text-lg text-slate-800">현장 지원</h4>
+                <p class="text-xs text-slate-500 mt-1 mb-4">일정 코디네이팅 및 비상 대기</p>
+                <a href="tel:010-4249-4026" class="w-full bg-teal-600 text-white px-4 py-2.5 rounded-xl font-bold shadow-md hover:bg-teal-700 transition text-sm text-center">조혁 이사<br class="md:hidden">010-4249-4026</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ESG -->
+<section id="esg" class="py-16 bg-emerald-50 border-t border-emerald-100">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-10">
+            <span class="text-emerald-600 font-black tracking-widest text-xs uppercase">ESG Initiative</span>
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mt-2 font-title">디지털 전환(DX) 성과 대시보드</h2>
+            <p class="text-slate-500 text-sm mt-2">스마트 가이드북 도입 기대효과 <strong class="text-emerald-600">(1인당 기준)</strong></p>
+        </div>
+        <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-emerald-100 text-center">
+                <div class="text-3xl font-black text-slate-800">4<span class="text-lg font-medium text-slate-500 ml-1">장</span></div>
+                <div class="text-sm font-bold text-slate-500 mt-1">종이 절감</div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-emerald-100 text-center">
+                <div class="text-3xl font-black text-slate-800">19<span class="text-lg font-medium text-slate-500 ml-1">g</span></div>
+                <div class="text-sm font-bold text-slate-500 mt-1">탄소 배출 감소</div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-emerald-100 text-center">
+                <div class="text-3xl font-black text-slate-800">38<span class="text-lg font-medium text-slate-500 ml-1">L</span></div>
+                <div class="text-sm font-bold text-slate-500 mt-1">물 절약</div>
+            </div>
+        </div>
+        <div class="max-w-4xl mx-auto bg-emerald-600 text-white rounded-2xl p-6 text-center shadow-lg">
+            <p class="text-sm md:text-base font-medium leading-relaxed">
+                본 행사는 종이 인쇄물을 대체하는 스마트 가이드북 도입을 통해 자원 낭비를 막고 탄소 배출을 줄이는 디지털 전환(DX) 실천 사례입니다.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Tourmaker -->
+<section id="tourmaker" class="py-20 bg-[#004098] text-white relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 20% 20%, #fff 0, transparent 40%), radial-gradient(circle at 80% 80%, #7dd3fc 0, transparent 35%);"></div>
+    <div class="container mx-auto px-4 max-w-6xl relative">
+        <div class="text-center mb-12">
+            <span class="text-sky-200 font-black tracking-widest text-xs uppercase">Travel Tech Partner</span>
+            <h2 class="text-2xl md:text-4xl font-black mt-3 font-title leading-tight">이 가이드북은 투어메이커가 만들었습니다</h2>
+            <p class="text-sky-100 mt-4 text-base md:text-lg leading-relaxed max-w-3xl mx-auto">일행이 같은 일정·날씨·연락망을 스마트폰 하나로 확인합니다. 카카오톡으로 가족·지인에게 공유하시면, 당일 여정과 함께 투어메이커를 자연스럽게 소개할 수 있습니다.</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-5 mb-12">
+            <div class="bg-white/10 backdrop-blur rounded-3xl p-6 border border-white/15">
+                <div class="w-12 h-12 bg-white/15 rounded-2xl flex items-center justify-center mb-4"><i class="fa-solid fa-mobile-screen-button text-xl"></i></div>
+                <h3 class="font-bold text-lg mb-2">스마트 가이드북</h3>
+                <p class="text-sky-100 text-sm leading-relaxed">종이 일정표 대신 URL 하나. 일정·동선 지도·실시간 날씨·비상연락망을 일행 모두가 동시에 봅니다.</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur rounded-3xl p-6 border border-white/15">
+                <div class="w-12 h-12 bg-white/15 rounded-2xl flex items-center justify-center mb-4"><i class="fa-solid fa-shield-heart text-xl"></i></div>
+                <h3 class="font-bold text-lg mb-2">단체 여행 맞춤</h3>
+                <p class="text-sky-100 text-sm leading-relaxed">편한 동선, 현장 인솔, 비상 연락 체계. 성인 단체 당일·힐링 여행을 안전하고 쾌적하게 운영합니다.</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur rounded-3xl p-6 border border-white/15">
+                <div class="w-12 h-12 bg-white/15 rounded-2xl flex items-center justify-center mb-4"><i class="fa-solid fa-route text-xl"></i></div>
+                <h3 class="font-bold text-lg mb-2">다음 여행도 함께</h3>
+                <p class="text-sky-100 text-sm leading-relaxed">효도여행, 친목회, 제주·국내 전세버스, 해외 연수까지. 학교·관공서가 맡기는 기획력으로 개인·단체 일정도 설계합니다.</p>
+            </div>
+        </div>
+        <div class="bg-white text-slate-800 rounded-[2rem] p-7 md:p-10 flex flex-col md:flex-row md:items-center gap-8 shadow-2xl">
+            <div class="flex-1">
+                <p class="text-xs font-black tracking-widest text-[#004098] uppercase mb-2">Share this guidebook</p>
+                <h3 class="text-xl md:text-2xl font-black font-title">가족에게 이 페이지를 보내 주세요</h3>
+                <p class="text-slate-500 mt-3 text-sm md:text-base leading-relaxed">카톡 공유 한 번이면 일정과 현장 연락처가 그대로 전달됩니다. 다음 단체 여행·효도여행이 필요하시면 투어메이커로 문의해 주세요.</p>
+                <div class="mt-5 flex flex-wrap gap-3 text-sm font-bold">
+                    <a href="tel:010-9443-7881" class="text-[#004098]">이재명 대표 010-9443-7881</a>
+                    <span class="text-slate-300">·</span>
+                    <a href="tel:010-3841-1361" class="text-[#004098]">담당 정두영 이사 010-3841-1361</a>
+                </div>
+            </div>
+            <div class="flex flex-col gap-3 shrink-0 w-full md:w-auto">
+                <button type="button" onclick="shareLink()" class="bg-[#004098] text-white px-6 py-3.5 rounded-2xl font-bold shadow-md hover:bg-[#002d6b] transition text-center">
+                    <i class="fa-solid fa-share-nodes mr-2"></i>가이드북 공유하기
+                </button>
+                <a href="https://tourmaker.kr" target="_blank" rel="noopener" class="bg-white border-2 border-[#004098] text-[#004098] px-6 py-3.5 rounded-2xl font-bold hover:bg-sky-50 transition text-center">
+                    투어메이커 홈페이지
+                </a>
+                <a href="tel:010-3841-1361" class="bg-indigo-50 text-indigo-700 px-6 py-3.5 rounded-2xl font-bold hover:bg-indigo-100 transition text-center">
+                    담당 정두영 이사 전화
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer style="background-color: #f8f9fa; padding: 40px 0; text-align: center;">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col items-center justify-center mb-6">
+            <a href="http://tourmaker.kr" target="_blank" rel="noopener" class="bg-white border border-slate-300 rounded-[1.2rem] px-8 py-4 hover:shadow-lg transition-all inline-block">
+                <div class="flex items-center gap-4">
+                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHfgIX70O5k6Anuo0UgALIdaG9jSga9auHu3uyz0uEirylGPAJnjN_qQbvEGMUvPqUQf_g9FMNUHRxlDcUBf4vZ3Mpy4TnA9WxbmzWYK11gt2zuy_Irl4wctNFjcjLyPo0GPXV792o_J7L9guRMuDfeC1gy7USwywjYbECZgzcsHybuGRRAXAnO1eNmP8/s320/logo.png" alt="Tourmaker" class="h-6">
+                    <span class="text-sm font-bold text-slate-700">홈페이지 바로가기 <i class="fa-solid fa-chevron-right text-xs ml-1"></i></span>
+                </div>
+            </a>
+        </div>
+        <p style="font-size: 12px; color: #6c757d; line-height: 1.6; max-width: 600px; margin: 0 auto;">
+            [System Powered by TOURMAKER] 본 스마트 가이드북은 <strong>2026 동해안 당일 여행</strong>의 기획과 <a href="http://tourmaker.kr" target="_blank" rel="noopener" style="font-weight: bold; color: #6c757d; text-decoration: underline;">투어메이커</a>의 트래블 테크 기술 제휴로 제작되었습니다.
+        </p>
+    </div>
+</footer>
+
+</div><!-- end print:hidden -->
+
+<!-- Print A4 (투어메이커 표준 일정표 양식 · 2페이지) -->
+<div id="print-area">
+    <!-- Page 1: 일정표 -->
+    <div class="print-page">
+        <div class="print-header">
+            <div class="logo">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHfgIX70O5k6Anuo0UgALIdaG9jSga9auHu3uyz0uEirylGPAJnjN_qQbvEGMUvPqUQf_g9FMNUHRxlDcUBf4vZ3Mpy4TnA9WxbmzWYK11gt2zuy_Irl4wctNFjcjLyPo0GPXV792o_J7L9guRMuDfeC1gy7USwywjYbECZgzcsHybuGRRAXAnO1eNmP8/s320/logo.png" alt="투어메이커 로고">
+            </div>
+            <div class="print-doc-info">문서번호: TM-261007-TB</div>
+        </div>
+
+        <div class="print-title">
+            <h1>동해안 당일 여행 일정표</h1>
+        </div>
+
+        <div class="print-overview">
+            <div><span class="label">행사기간</span> 2026. 10. 07 (수) · 당일</div>
+            <div><span class="label">대상</span> 일반성인단체</div>
+            <div><span class="label">이용교통</span> 전세버스 · 숙박 없음</div>
+        </div>
+
+        <table class="print-table">
+            <thead>
+                <tr>
+                    <th class="col-date">일자</th>
+                    <th class="col-desc">상세 일정 및 동선</th>
+                    <th class="col-meal">식사</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="day-divider">
+                    <td class="col-date"><strong>당일</strong><br>10/7 (수)<br><br><span style="font-size:11px;font-weight:600;">07:00 출발</span></td>
+                    <td class="col-desc">
+                        <div class="time-flow"><span class="time-tag">07:00</span> 태백 집결 · 전세버스 출발</div>
+                        <ul class="desc-list">
+                            <li><span class="time-tag">오전</span> <span class="highlight">고성 송지호 바다 둘레길</span> — 동해 석호 해안 산책</li>
+                            <li><span class="time-tag">중식</span> <span class="highlight">주문진 회정식</span> + 주문진 어시장 관람 (강릉시 주문진읍)</li>
+                            <li><span class="time-tag">오후</span> <span class="highlight">양양 휴휴암</span> — 동해 해안 암자 · 힐링</li>
+                            <li><span class="time-tag">오후</span> <span class="highlight">강릉 안목 커피거리</span> — 바다 전망 자유 시간</li>
+                            <li><span class="time-tag">석식</span> <span class="highlight">도계</span> (해물찜 또는 갈비탕)</li>
+                        </ul>
+                        <div class="time-flow" style="margin-top:10px;"><span class="time-tag">귀환</span> 태백 도착 · 해산</div>
+                    </td>
+                    <td class="col-meal">
+                        <div class="meal-wrapper">
+                            <div class="meal-simple"><strong>중:</strong><div class="meal-menu">회정식<span class="meal-sub">(주문진)</span></div></div>
+                            <div class="meal-simple"><strong>석:</strong><div class="meal-menu">해물찜<br>또는 갈비탕<span class="meal-sub">(도계)</span></div></div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="print-remarks">
+            ※ 상기 일정은 현지 사정에 의하여 변동될 수 있습니다.
+        </div>
+
+        <div class="print-footer print-contacts">
+            <a href="http://tourmaker.kr" target="_blank" rel="noopener" class="brand-link">
+                <i class="fa-solid fa-link"></i> [System Powered by TOURMAKER]
+            </a>
+            <div class="manager-info">
+                <div class="names">담당: 정두영 이사 010-3841-1361 · 이재명 010-9443-7881</div>
+                <div style="font-size:12px;color:#64748b;margin-top:4px;">버스 승무원: 김현철 010-3742-7993 · 현장 지원: 조혁 010-4249-4026</div>
+            </div>
+        </div>
+    </div><!-- end page 1 -->
+
+    <!-- Page 2: 준비물 + 스마트가이드북 QR -->
+    <div class="print-page print-page-2">
+        <div class="print-header">
+            <div class="logo">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHfgIX70O5k6Anuo0UgALIdaG9jSga9auHu3uyz0uEirylGPAJnjN_qQbvEGMUvPqUQf_g9FMNUHRxlDcUBf4vZ3Mpy4TnA9WxbmzWYK11gt2zuy_Irl4wctNFjcjLyPo0GPXV792o_J7L9guRMuDfeC1gy7USwywjYbECZgzcsHybuGRRAXAnO1eNmP8/s320/logo.png" alt="투어메이커 로고">
+            </div>
+            <div class="print-doc-info">문서번호: TM-261007-TB · 2/2</div>
+        </div>
+
+        <div class="print-title">
+            <h1>출발 전 준비물 &amp; 스마트 가이드북</h1>
+        </div>
+
+        <div class="print-overview">
+            <div><span class="label">행사일</span> 2026. 10. 07 (수)</div>
+            <div><span class="label">대상</span> 일반성인단체</div>
+            <div><span class="label">형태</span> 동해안 당일 전세버스</div>
+        </div>
+
+        <div class="print-checklist">
+            <h2>□ 출발 전 준비물 체크리스트</h2>
+            <div class="print-checklist-grid">
+                <div class="print-check-item"><span class="print-check-box"></span>신분증 (주민등록증·운전면허증 등)</div>
+                <div class="print-check-item"><span class="print-check-box"></span>편한 운동화</div>
+                <div class="print-check-item"><span class="print-check-box"></span>얇은 겉옷·바람막이 (해풍 대비)</div>
+                <div class="print-check-item"><span class="print-check-box"></span>멀미약·개인 상비약</div>
+                <div class="print-check-item"><span class="print-check-box"></span>보조배터리·충전기</div>
+                <div class="print-check-item"><span class="print-check-box"></span>접이식 우산</div>
+                <div class="print-check-item"><span class="print-check-box"></span>모자·선글라스</div>
+                <div class="print-check-item"><span class="print-check-box"></span>물·간단한 간식</div>
+            </div>
+        </div>
+
+        <ul class="print-note-list">
+            <li>송지호 둘레길 해안 산책·휴휴암 계단이 포함되므로 <strong>편한 신발</strong>을 꼭 챙겨 주세요.</li>
+            <li>동해안 해풍으로 체감온도가 낮을 수 있으므로 얇은 겉옷을 반드시 준비해 주세요.</li>
+            <li>현장 공지·날씨·동선 변경은 스마트 가이드북에서 가장 빠르게 확인하실 수 있습니다.</li>
+        </ul>
+
+        <div class="print-qr-box">
+            <img src="assets/images/guidebook-qr.png" alt="스마트 가이드북 QR코드" width="96" height="96">
+            <div class="qr-copy">
+                <strong>📱 스마트 가이드북 바로가기</strong>
+                QR코드를 스캔하시면 실시간 날씨, 세부 일정, 여행동선,<br>
+                준비물 체크리스트를 스마트폰에서 확인하실 수 있습니다.<br>
+                스마트폰으로 스캔하면 스마트 가이드북을 열 수 있습니다.<br>
+                <span class="qr-url">https://indadady.github.io/261007_Donghaean/</span>
+            </div>
+        </div>
+
+        <div class="print-footer print-contacts">
+            <a href="http://tourmaker.kr" target="_blank" rel="noopener" class="brand-link">
+                <i class="fa-solid fa-link"></i> [System Powered by TOURMAKER]
+            </a>
+            <div class="manager-info">
+                <div class="names">담당: 정두영 이사 010-3841-1361 · 이재명 010-9443-7881</div>
+                <div style="font-size:12px;color:#64748b;margin-top:4px;">버스 승무원: 김현철 010-3742-7993 · 현장 지원: 조혁 010-4249-4026</div>
+            </div>
+        </div>
+    </div><!-- end page 2 -->
+</div><!-- end print-area -->
+
+<div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 translate-y-20 opacity-0 bg-slate-900 text-white px-5 py-3 rounded-full text-sm font-bold shadow-xl z-[9999] transition-all duration-300 no-print">
+    <span id="toast-msg"></span>
+</div>
+<div id="custom-confirm" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/60 backdrop-blur-sm px-4 no-print">
+    <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center">
+        <h3 class="text-xl font-bold mb-2">초기화 확인</h3>
+        <p class="text-slate-600 text-sm mb-6">체크리스트를 초기화하시겠습니까?</p>
+        <div class="flex gap-3">
+            <button onclick="closeConfirmModal()" class="flex-1 bg-slate-100 py-3 rounded-xl font-bold">취소</button>
+            <button onclick="executeResetChecklist()" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold">초기화</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* ===== 기본 설정 ===== */
+    const CHECK_KEY = 'tm_261007_donghaean_checklist';
+    const MEMO_KEY  = 'tm_261007_donghaean_memo';
+    const PRINT_FILENAME = '261007_동해안_일정표';
+    const PAGE_TITLE = document.title;
+    const SHARE_TITLE = '동해안 당일 가이드북';
+    window.addEventListener('beforeprint', () => { document.title = PRINT_FILENAME; });
+    window.addEventListener('afterprint',  () => { document.title = PAGE_TITLE; });
+
+    /* ===== D-Day 배지 ===== */
+    const TOUR_START = new Date('2026-10-07T00:00:00');
+    const TOUR_END   = new Date('2026-10-07T23:59:59');
+    function updateDday() {
+        const today = new Date(); today.setHours(0,0,0,0);
+        const diff = Math.ceil((TOUR_START - today) / 86400000);
+        const badge = document.getElementById('d-day-badge');
+        badge.classList.remove('hidden');
+        if (diff > 0) {
+            badge.className = 'ml-1 bg-blue-600 text-white text-[10px] px-2.5 py-1 rounded-full font-bold animate-pulse';
+            badge.innerText = `D-${diff}`;
+        } else if (today <= TOUR_END) {
+            badge.className = 'ml-1 bg-red-600 text-white text-[10px] px-2.5 py-1 rounded-full font-bold animate-pulse';
+            badge.innerText = '📍 당일 진행중';
+        } else {
+            badge.className = 'ml-1 bg-slate-500 text-white text-[10px] px-2.5 py-1 rounded-full font-bold';
+            badge.innerText = '🏁 여정 종료';
+        }
+    }
+    updateDday();
+
+    /* ===== 당일 UI (Asia/Seoul 달력 비교 · UTC Date 문자열+ceil 금지) ===== */
+    const TEST_DATE = "";  // 개발용: "2026-10-07" | 배포시 빈 문자열
+    const EVENT_DATE = '2026-10-07';
+    (function initDayOfBar() {
+        const urlParams = new URLSearchParams(location.search);
+        const testDateFromUrl = urlParams.get('test_date');
+        let todaySeoul;
+        if (testDateFromUrl) {
+            todaySeoul = testDateFromUrl;
+        } else if (TEST_DATE) {
+            todaySeoul = TEST_DATE;
+        } else {
+            // Asia/Seoul 달력 날짜를 ISO YYYY-MM-DD 문자열로 변환
+            todaySeoul = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul' }).format(new Date());
+        }
+        const isEventDay = (todaySeoul === EVENT_DATE);
+        const bar = document.getElementById('day-of-bar');
+        if (isEventDay) {
+            bar.style.display = 'flex';
+            // 지도 초기화 시 "당일" 탭 프리셀렉트 (IntersectionObserver가 지도를 초기화)
+            window._dayOfBarActive = true;
+        }
+    })();
+
+    function scrollToSchedule() {
+        const el = document.getElementById('schedule');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    function scrollToMap() {
+        const el = document.getElementById('map-section');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // 지도 초기화 후 전체 탭 선택
+        if (window.currentMap) filterMap('all');
+    }
+
+    /* ===== 유틸 함수 ===== */
+    function printSchedule() { window.print(); }
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        document.getElementById('toast-msg').innerText = msg;
+        t.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 2800);
+    }
+    function shareLink() {
+        const url = window.location.href;
+        if (navigator.share) navigator.share({ title: SHARE_TITLE, url }).catch(()=>{});
+        else navigator.clipboard.writeText(url).then(() => showToast('링크가 복사되었습니다. 카톡으로 공유해 보세요.'));
+    }
+
+    /* ===== 체크리스트 ===== */
+    const CHECK_ITEMS = [
+        '신분증 (주민등록증·운전면허증 등)',
+        '편한 운동화',
+        '얇은 겉옷·바람막이',
+        '멀미약·개인 상비약',
+        '보조배터리·충전기',
+        '접이식 우산',
+        '모자·선글라스',
+        '물·간단한 간식'
+    ];
+    function renderChecklist() {
+        const c = document.getElementById('checklist-container');
+        const saved = JSON.parse(localStorage.getItem(CHECK_KEY) || '{}');
+        c.innerHTML = CHECK_ITEMS.map((label, i) => {
+            const id = 'chk_' + i;
+            return `<label class="flex items-start gap-3 bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 cursor-pointer hover:bg-purple-50"><input type="checkbox" id="${id}" ${saved[id]?'checked':''} class="w-5 h-5 mt-0.5 accent-purple-500 rounded"><span class="text-sm text-slate-700 font-medium">${label}</span></label>`;
+        }).join('');
+        c.querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => {
+            const s = JSON.parse(localStorage.getItem(CHECK_KEY) || '{}');
+            s[cb.id] = cb.checked;
+            localStorage.setItem(CHECK_KEY, JSON.stringify(s));
+        }));
+    }
+    function promptResetChecklist() { document.getElementById('custom-confirm').classList.replace('hidden','flex'); }
+    function closeConfirmModal() { document.getElementById('custom-confirm').classList.replace('flex','hidden'); }
+    function executeResetChecklist() { localStorage.removeItem(CHECK_KEY); renderChecklist(); closeConfirmModal(); showToast('초기화되었습니다.'); }
+    renderChecklist();
+    (function(){
+        const m = document.getElementById('travel-memo');
+        m.value = localStorage.getItem(MEMO_KEY) || '';
+        m.addEventListener('input', () => localStorage.setItem(MEMO_KEY, m.value));
+    })();
+
+    /* ===== 날씨 (강릉 Open-Meteo 37.7519, 128.8761) ===== */
+    function weatherIcon(wCode) {
+        if (wCode === 0) return 'fa-sun text-orange-400';
+        if (wCode <= 3) return 'fa-cloud-sun text-yellow-400';
+        if (wCode <= 67) return 'fa-cloud-rain text-blue-400';
+        if (wCode <= 77) return 'fa-snowflake text-slate-300';
+        return 'fa-cloud-showers-heavy text-blue-500';
+    }
+    async function fetchWeather() {
+        const box = document.getElementById('weather-gangneung');
+        try {
+            const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.7519&longitude=128.8761&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&forecast_days=7');
+            const data = await res.json();
+            const days = ['일','월','화','수','목','금','토'];
+            const trip = '2026-10-07';
+            box.innerHTML = '';
+            for (let i = 0; i < data.daily.time.length; i++) {
+                const date = new Date(data.daily.time[i]);
+                const isTrip = (data.daily.time[i] === trip);
+                box.innerHTML += `
+                    <div class="flex flex-col items-center p-2 rounded-lg border min-w-[68px] shrink-0 shadow-sm ${isTrip ? 'bg-blue-50 border-blue-200 ring-1 ring-blue-200' : 'bg-white border-slate-100'}">
+                        ${isTrip ? '<span class="text-[8px] font-black text-blue-600 mb-0.5">여행일</span>' : '<span class="text-[8px] text-transparent mb-0.5">.</span>'}
+                        <span class="text-[9px] text-slate-400 mb-1">${date.getMonth()+1}/${date.getDate()}(${days[date.getDay()]})</span>
+                        <i class="fa-solid ${weatherIcon(data.daily.weathercode[i])} text-lg mb-1"></i>
+                        <span class="text-[10px] font-bold text-slate-700">${Math.round(data.daily.temperature_2m_min[i])}°<span class="text-slate-300 mx-0.5">/</span>${Math.round(data.daily.temperature_2m_max[i])}°</span>
+                    </div>`;
+            }
+        } catch(e) {
+            box.innerHTML = '<p class="text-xs text-red-400 p-2">날씨 정보를 불러오지 못했습니다.</p>';
+        }
+    }
+    fetchWeather();
+
+    /* ===== 지도 (OSRM 실제 도로 + 순차 재생 + 버스 기수 방향) ===== */
+    let mapInited = false;
+    let currentMap = null;
+    let mapLayers  = [];
+    let mapDrawSeq = 0;
+    let activeBus  = null;
+    const osrmCache = {};
+
+    const mapHints = {
+        all:       '전체 일정 — 태백→송지호→주문진→휴휴암→안목→도계→태백 실제 도로 동선',
+        morning:   '오전 동선 — 태백(출발) → 고성 송지호 → 주문진(중식)',
+        afternoon: '오후 동선 — 주문진 → 양양 휴휴암 → 강릉 안목 커피거리',
+        return:    '귀환 동선 — 강릉 안목 → 도계(석식) → 태백 해산'
+    };
+
+    const spots = {
+        taebaek:  { coords: [37.1641, 128.9856], title: '태백',        color: '#004098', icon: '🚌', badge: '출발·도착' },
+        songjiho: { coords: [38.3345, 128.5228], title: '송지호',       color: '#0ea5e9', icon: '🌊' },
+        jumunjin: { coords: [37.8915, 128.8289], title: '주문진',       color: '#f97316', icon: '🐟' },
+        huhuham:  { coords: [38.0235, 128.7320], title: '휴휴암',       color: '#16a34a', icon: '🪷' },
+        anmok:    { coords: [37.7714, 128.9486], title: '안목커피거리', color: '#d97706', icon: '☕' },
+        dogye:    { coords: [37.2368, 129.0465], title: '도계',         color: '#7c3aed', icon: '🍲' }
+    };
+
+    const routes = {
+        all: {
+            points: ['taebaek','songjiho','jumunjin','huhuham','anmok','dogye'],
+            lines: [
+                { pts: ['taebaek','songjiho','jumunjin'],        color: '#f97316' },
+                { pts: ['jumunjin','huhuham','anmok'],            color: '#3b82f6' },
+                { pts: ['anmok','dogye','taebaek'],               color: '#22c55e' }
+            ]
+        },
+        morning: {
+            points: ['taebaek','songjiho','jumunjin'],
+            lines: [{ pts: ['taebaek','songjiho','jumunjin'],    color: '#f97316' }]
+        },
+        afternoon: {
+            points: ['jumunjin','huhuham','anmok'],
+            lines: [{ pts: ['jumunjin','huhuham','anmok'],        color: '#3b82f6' }]
+        },
+        return: {
+            points: ['anmok','dogye','taebaek'],
+            lines: [{ pts: ['anmok','dogye','taebaek'],           color: '#22c55e' }]
+        }
+    };
+
+    function isMobileView() { return window.matchMedia('(max-width: 768px)').matches; }
+
+    function setMapStatus(text) {
+        const el = document.getElementById('map-status-text');
+        if (el) el.textContent = text;
+    }
+
+    function pinIcon(spot) {
+        return L.divIcon({
+            className: 'custom-icon',
+            html: `<div class="map-pin-wrap">
+                <div class="map-pin-dot" style="background:${spot.color};position:relative;">${spot.icon}${spot.badge ? `<span class="map-pin-badge">${spot.badge}</span>` : ''}</div>
+                <span class="map-pin-label">${spot.title}</span>
+            </div>`,
+            iconSize: [92, 56],
+            iconAnchor: [46, 18]
+        });
+    }
+
+    /* 방위각(0°=북, 90°=동) 계산 */
+    function bearingDeg(from, to) {
+        const lat1 = from[0] * Math.PI / 180;
+        const lat2 = to[0]   * Math.PI / 180;
+        const dLng = (to[1] - from[1]) * Math.PI / 180;
+        const y = Math.sin(dLng) * Math.cos(lat2);
+        const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+        return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+    }
+
+    /* 버스 아이콘 (🚌는 동쪽=90° 기준, cssRot = bearing - 90) */
+    function createBusIcon(brg) {
+        const cssRot = brg - 90;
+        return L.divIcon({
+            className: 'custom-icon',
+            html: `<div class="map-bus"><span class="bus-inner" style="transform:rotate(${cssRot}deg);">🚌</span></div>`,
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+        });
+    }
+
+    function clearMapLayers() {
+        if (activeBus) activeBus._aborted = true;
+        activeBus = null;
+        mapLayers.forEach(layer => {
+            if (layer._aborted !== undefined) layer._aborted = true;
+            currentMap.removeLayer(layer);
+        });
+        mapLayers = [];
+    }
+
+    async function roadPath(pts) {
+        const key = pts.map(p => p.join(',')).join('|');
+        if (osrmCache[key]) return osrmCache[key];
+        try {
+            const coords = pts.map(p => `${p[1]},${p[0]}`).join(';');
+            const res  = await fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`);
+            const data = await res.json();
+            if (data.code === 'Ok' && data.routes && data.routes[0]) {
+                const path = data.routes[0].geometry.coordinates.map(([lng,lat]) => [lat,lng]);
+                osrmCache[key] = path;
+                return path;
+            }
+        } catch(e) { /* fallback */ }
+        return pts; // 직선 fallback
+    }
+
+    function lineDuration(pixelLength) {
+        const mobile = isMobileView();
+        const min = mobile ? 2800 : 1400;
+        const max = mobile ? 5600 : 2800;
+        const pxPerMs = mobile ? 0.12 : 0.28;
+        return Math.max(min, Math.min(max, pixelLength / pxPerMs));
+    }
+
+    function whenPathReady(polyline) {
+        return new Promise(resolve => {
+            let tries = 24;
+            const tick = () => {
+                const el = polyline.getElement();
+                if (el && typeof el.getTotalLength === 'function') resolve(el);
+                else if (tries-- > 0) requestAnimationFrame(tick);
+                else resolve(null);
+            };
+            requestAnimationFrame(tick);
+        });
+    }
+
+    function animateLine(polyline, duration) {
+        return new Promise(async resolve => {
+            const path = await whenPathReady(polyline);
+            if (!path) { resolve(duration); return; }
+            const length = path.getTotalLength();
+            const ms = duration || lineDuration(length);
+            path.style.transition = 'none';
+            path.style.strokeDasharray  = length + ' ' + length;
+            path.style.strokeDashoffset = String(length);
+            path.getBoundingClientRect();
+            path.style.transition = `stroke-dashoffset ${ms}ms ease-in-out`;
+            path.style.strokeDashoffset = '0';
+            setTimeout(() => resolve(ms), ms + 40);
+        });
+    }
+
+    /* moveMarkerAlong: 버스 기수 방향을 구간마다 갱신 */
+    function moveMarkerAlong(marker, latlngs, duration) {
+        return new Promise(resolve => {
+            if (!marker || !latlngs || latlngs.length < 2) { resolve(); return; }
+            const dists = [0];
+            let total = 0;
+            for (let i = 1; i < latlngs.length; i++) {
+                total += L.latLng(latlngs[i-1]).distanceTo(L.latLng(latlngs[i]));
+                dists.push(total);
+            }
+            if (total === 0) { resolve(); return; }
+            let lastSegIdx = -1;
+            const start = performance.now();
+            const ease = t => t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2;
+            function frame(now) {
+                if (marker._aborted) { resolve(); return; }
+                const t = Math.min(1, (now - start) / duration);
+                const target = total * ease(t);
+                let i = 1;
+                while (i < dists.length && dists[i] < target) i++;
+                const segIdx = Math.min(i - 1, latlngs.length - 2);
+
+                /* 구간이 바뀌면 버스 기수 방향 업데이트 */
+                if (segIdx !== lastSegIdx) {
+                    lastSegIdx = segIdx;
+                    const from = latlngs[segIdx];
+                    const to   = latlngs[Math.min(segIdx + 1, latlngs.length - 1)];
+                    const brg  = bearingDeg(from, to);
+                    const el   = marker.getElement();
+                    if (el) {
+                        const inner = el.querySelector('.bus-inner');
+                        if (inner) inner.style.transform = `rotate(${brg - 90}deg)`;
+                    }
+                }
+
+                const a = latlngs[i - 1];
+                const b = latlngs[Math.min(i, latlngs.length - 1)];
+                const span = (dists[i] - dists[i-1]) || 1;
+                const f = (target - dists[i-1]) / span;
+                marker.setLatLng([a[0] + (b[0]-a[0])*f, a[1] + (b[1]-a[1])*f]);
+                if (t < 1) requestAnimationFrame(frame);
+                else resolve();
+            }
+            requestAnimationFrame(frame);
+        });
+    }
+
+    async function drawMap(routeKey) {
+        if (!currentMap) return;
+        const seq = ++mapDrawSeq;
+        clearMapLayers();
+        const routeData = routes[routeKey] || routes.all;
+        const hint = mapHints[routeKey] || '';
+        const hintEl = document.getElementById('map-hint');
+        if (hintEl) hintEl.textContent = hint;
+        setMapStatus('실제 도로 동선을 불러오는 중...');
+
+        const bounds = L.latLngBounds(routeData.points.map(k => spots[k].coords));
+        currentMap.fitBounds(bounds, { padding: [56, 56], maxZoom: routeKey === 'all' ? 9 : 12 });
+        setTimeout(() => currentMap.invalidateSize(), 120);
+
+        const legs = [];
+        routeData.lines.forEach(lineDef => {
+            for (let i = 0; i < lineDef.pts.length - 1; i++) {
+                legs.push({ from: lineDef.pts[i], to: lineDef.pts[i+1], color: lineDef.color });
+            }
+        });
+        const paths = await Promise.all(legs.map(leg => roadPath([spots[leg.from].coords, spots[leg.to].coords])));
+        if (seq !== mapDrawSeq) return;
+
+        paths.forEach(path => path.forEach(pt => bounds.extend(pt)));
+        currentMap.fitBounds(bounds, { padding: [56, 56], maxZoom: routeKey === 'all' ? 9 : 12 });
+        await new Promise(r => setTimeout(r, 280));
+        if (seq !== mapDrawSeq) return;
+
+        const ghost = L.polyline(paths.flat(), { color: '#94a3b8', weight: 4, opacity: 0.22, lineJoin: 'round', lineCap: 'round' }).addTo(currentMap);
+        mapLayers.push(ghost);
+
+        const placed = new Set();
+        const addPin = (key) => {
+            if (placed.has(key)) return;
+            placed.add(key);
+            const spot = spots[key];
+            const marker = L.marker(spot.coords, { icon: pinIcon(spot), zIndexOffset: 200 })
+                .addTo(currentMap)
+                .bindTooltip(spot.title, { direction: 'top', offset: [0, -18] });
+            mapLayers.push(marker);
+        };
+        addPin(legs[0].from);
+
+        /* 첫 구간의 방향으로 버스 아이콘 초기화 */
+        const initialBrg = bearingDeg(spots[legs[0].from].coords, spots[legs[0].to].coords);
+        const bus = L.marker(spots[legs[0].from].coords, { icon: createBusIcon(initialBrg), zIndexOffset: 900 }).addTo(currentMap);
+        bus._aborted = false;
+        activeBus = bus;
+        mapLayers.push(bus);
+
+        for (let i = 0; i < legs.length; i++) {
+            if (seq !== mapDrawSeq) return;
+            const leg  = legs[i];
+            const path = paths[i];
+            setMapStatus(`${spots[leg.from].title} → ${spots[leg.to].title}`);
+
+            /* 구간 시작 시 기수 방향 설정 */
+            const legBrg = bearingDeg(spots[leg.from].coords, spots[leg.to].coords);
+            const busEl = bus.getElement();
+            if (busEl) {
+                const inner = busEl.querySelector('.bus-inner');
+                if (inner) inner.style.transform = `rotate(${legBrg - 90}deg)`;
+            }
+
+            const poly = L.polyline(path, { color: leg.color, weight: 5, opacity: 0.95, lineJoin: 'round', lineCap: 'round' }).addTo(currentMap);
+            mapLayers.push(poly);
+            const ready = await whenPathReady(poly);
+            const ms = lineDuration(ready ? ready.getTotalLength() : 400);
+            await Promise.all([
+                animateLine(poly, ms),
+                moveMarkerAlong(bus, path, ms)
+            ]);
+            if (seq !== mapDrawSeq) return;
+            addPin(leg.to);
+            await new Promise(r => setTimeout(r, isMobileView() ? 320 : 160));
+        }
+        if (seq !== mapDrawSeq) return;
+        setMapStatus(hint);
+        if (bus && currentMap.hasLayer(bus)) currentMap.removeLayer(bus);
+        mapLayers = mapLayers.filter(layer => layer !== bus);
+        if (activeBus === bus) activeBus = null;
+        /* 태백 귀환 핀 (전체·귀환 탭) */
+        if (routeKey === 'all' || routeKey === 'return') addPin('taebaek');
+        setTimeout(() => currentMap.invalidateSize(), 160);
+    }
+
+    function initMap() {
+        if (mapInited || !window.L) return;
+        mapInited = true;
+        currentMap = L.map('map', { scrollWheelZoom: false });
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19,
+            attribution: 'Tiles &copy; Esri'
+        }).addTo(currentMap);
+
+        const defaultTab = isMobileView() ? 'morning' : 'all';
+        drawMap(defaultTab);
+        /* 버튼 초기 상태 */
+        document.querySelectorAll('.map-btn').forEach(btn => {
+            btn.classList.remove('bg-slate-800', 'text-white');
+            btn.classList.add('bg-white', 'text-slate-600');
+        });
+        const activeBtn = document.getElementById('btn-map-' + defaultTab);
+        if (activeBtn) {
+            activeBtn.classList.remove('bg-white', 'text-slate-600');
+            activeBtn.classList.add('bg-slate-800', 'text-white');
+        }
+    }
+
+    window.filterMap = function(tabKey) {
+        document.querySelectorAll('.map-btn').forEach(btn => {
+            btn.classList.remove('bg-slate-800', 'text-white');
+            btn.classList.add('bg-white', 'text-slate-600');
+        });
+        const targetBtn = document.getElementById('btn-map-' + tabKey);
+        if (targetBtn) {
+            targetBtn.classList.remove('bg-white', 'text-slate-600');
+            targetBtn.classList.add('bg-slate-800', 'text-white');
+        }
+        if (!currentMap) {
+            initMap();
+            if (tabKey !== (isMobileView() ? 'morning' : 'all')) drawMap(tabKey);
+            return;
+        }
+        drawMap(tabKey);
+    };
+
+    const io = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) { initMap(); io.disconnect(); }
+    }, { threshold: 0.1 });
+    const mapSection = document.getElementById('map-section');
+    if (mapSection) io.observe(mapSection);
+</script>
+</body>
+</html>
